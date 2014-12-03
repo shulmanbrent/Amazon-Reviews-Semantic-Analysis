@@ -1,13 +1,10 @@
-import os
 import gzip
-import json
 
 
-__location__ = os.path.realpath(
-    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+#code to parse the zip
+#the zipped file of Amazon Reviews
 
-baby = os.path.join(__location__, 'Baby.txt.gz');
-        
+#code given from SNAP at Stanford
 def parse(filename):
   f = gzip.open(filename, 'r')
   entry = {}
@@ -23,7 +20,12 @@ def parse(filename):
     entry[eName] = rest
   yield entry
 
-for e in parse(baby):
+
+##code to print out the results
+##e is of the dictionary type, and 
+##info can be distilled by ex: e['review/text']
+#for e in parse(baby):
+    #print json.dumps(e['review/text'])
+
     
-  print json.dumps(e["review/profileName"])
-  
+    
