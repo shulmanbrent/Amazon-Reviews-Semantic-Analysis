@@ -1,7 +1,7 @@
 import os
 import json
 import csv
-import parse
+from parse import parse
 
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -11,6 +11,7 @@ baby = os.path.join(__location__, 'Baby.txt.gz');
 data = []
 i = 0
 for e in parse(baby):
+    print e
     try:
         temp = [i, json.dumps(e['product/productId']), json.dumps(e['review/text'])]
         data.append(temp)
