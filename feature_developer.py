@@ -8,6 +8,7 @@ import nltk
 import random
 from parse import parse
 from getAllWords import getAllWords
+import feature_developer_stars 
 
 from nltk.corpus import stopwords
 stopset = set(stopwords.words('english'))
@@ -52,7 +53,8 @@ def featureDeveloper(response_data):
         s['length'] = len(words)
         
         for word in word_features:
-            s["contains(%s)" % word] = (word in set(words))
+            #s["contains(%s)" % word] = (word in set(words))
+            s["%s" % word] = (word in set(words))
         featureSets.append((s, item['Answer']))
     return featureSets
   
@@ -61,20 +63,29 @@ def featureDeveloper(response_data):
 featureSets = featureDeveloper(response_data)
 random.shuffle(featureSets)
 
-train_set, test_set = featureSets[500:], featureSets[:500]
+train_set, test_set = featureSets[:500], featureSets[500:]
 classifier = nltk.NaiveBayesClassifier.train(train_set)
 
 print 'accuracy:', nltk.classify.util.accuracy(classifier, test_set)
-classifier.show_most_informative_features()
+classifier.show_most_informative_features(20)
 
-#
-#data = []
-#i = 0
-#for e in parse(baby):
-#    try:
-#        temp = [i, json.dumps(e['product/productId']), json.dumps(e['review/text'])]
-#        data.append(temp)
-#        i += 1
-#    except KeyError as k:
-#        #print json.dumps(e)
-#        continue
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+baby = os.path.join(__location__, 'Baby.txt.gz');
+
+data = []
+for e in parse(baby):
+    try:
+        data.append(e)
+    except KeyError as k:
+        #print json.dumps(e)
+        continue
+
+data = data[:len(data) - 2]
+
+x = feature_developer_stars.featureDeveloper(data)
+for y in x:
+    x[x.index(y)] = y[0]
+
+z = classifier.batch_classify(x)
