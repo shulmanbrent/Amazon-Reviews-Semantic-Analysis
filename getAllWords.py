@@ -16,6 +16,7 @@ def getAllWords():
     all_words = []
     for e in parse(baby):
         try:
+            
             review_text = json.dumps(e['review/text'])
             review_words = review_text.split(' ')
             for w in review_words:
