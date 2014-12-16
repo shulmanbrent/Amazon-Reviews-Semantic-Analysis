@@ -44,3 +44,6 @@ Temporary Items
 *.gz
 *.doc
 *.docx
+*.tmp
+*.csv
+*.pdf
