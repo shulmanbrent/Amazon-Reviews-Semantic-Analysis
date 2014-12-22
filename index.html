@@ -54,9 +54,9 @@
 
 <p>With this in mind, I decide to focus on just reviews of “Baby” products. After talking with many other people, I determined that a topic that many people are interested in hearing other’s opinions on in “Baby” products. The transition from to motherhood can be very stressful for many women. I and others have observed anecdotally that mother almost always want “what is best” for their children. Often this in reference to the different types of product they will be using with their child. Many mothers are interested in the opinion of other mothers. This gives them a sense of whether they should use a product on their own baby or not. </p>
 
-<p>I decided go about researching these questions in two different ways. First I used only the given information in the dataset. Specifically, the review score and the review text given in the JSON object. An example of these objects can be see below:<img src="./images/pic json.PNG" alt="Text Classification Scheme"></p>
+<p>I decided go about researching these questions in two different ways. First I used only the given information in the dataset. Specifically, the review score and the review text given in the JSON object. An example of these objects can be see below:<br><img src="./images/pic json.PNG" alt="Text Classification Scheme"></p>
 
-<p>Then secondly I used a crowdsourcing method to help me categorize the text. The basic model for how I will be tackling this research is best illustrated by the picture on the next page:<img src="http://www.nltk.org/images/supervised-classification.png" alt="Text Classification Scheme"></p>
+<p>Then secondly I used a crowdsourcing method to help me categorize the text. The basic model for how I will be tackling this research is best illustrated by the picture on the next page:<br><img src="http://www.nltk.org/images/supervised-classification.png" alt="Text Classification Scheme"></p>
 
 <p>For the first part of the research project, the inputs were the reviews of the products contained in the Baby.gz file. Using a method called parse given by SNAP, I am able to access a list of the reviews and their properties in the form of a dictionary. This allowed me to pull out only specific and pertinent information about each of the reviews. In this case, only review score and the review text were needed. We can then use this to help define out data. The first step is to choose our labels. These are essentially the buckets into which I am classifying the reviews. During the first iteration I chose the five possible review values to be the labels 1.0  5.0. As you will see below this was a bit ambitious.</p>
 
@@ -65,17 +65,17 @@
 <p>I then created featureExtractor.py to parse the given review text into just its constituent words. I make sure not to include digits, as well as remove any punctuation from the strings. This method however also removes a feature that is possible semantically telling. Often increase punctuation (ex: exclamation points) could make it more likely that a review fits into one category or another. While I have simply chosen to look at each word individually, often the syntax and of sentences and phrases if often important. This can be analyzed, but I have chosen not to do this for this project because it can be very complicated. </p>
 
 <p>Now that I had the feature and the label matched up appropriately, we have something of the following form:
-<img src="./images/pic 4.PNG" alt="Text Classification Scheme"></p>
+<br><img src="./images/pic 4.PNG" alt="Text Classification Scheme"></p>
 
-<p>Once this is done for all 187,000 items in the review dataset, I can then use a machine learning algorithm to help build a model to predict the sentiment of a previously unseen review. For this project I have chosen to use Naïve Bayes because of the ease by which I can build a Naïve Bayes Classifier using NLTK. The basic formula for this method can be seen below:<img src="http://upload.wikimedia.org/math/3/1/7/3174021f44ba0d31f6ede772624c5523.png" alt="General Naive Bayes Formula"></p>
+<p>Once this is done for all 187,000 items in the review dataset, I can then use a machine learning algorithm to help build a model to predict the sentiment of a previously unseen review. For this project I have chosen to use Naïve Bayes because of the ease by which I can build a Naïve Bayes Classifier using NLTK. The basic formula for this method can be seen below:<br><img src="http://upload.wikimedia.org/math/3/1/7/3174021f44ba0d31f6ede772624c5523.png" alt="General Naive Bayes Formula"></p>
 
 <p>The naivety of the Naïve Bayes comes from the assumption that the probability of the any particular feature being true is independent of any other particular feature being true. This is obviously not inherently logical, as it would make sense that the words “love” and “like” appear often together. </p>
 
 <p>Following this, I partition the feature set into 3 separate groups – the train_set, dev_set, and test_set. I will use train set to train the classifier and test its accuracy on the dev_set. This allows me to continue to tweak which features I am using to predict and classify the sentiment of the reviews. Ultimately by improving the accuracy on the dev_set I can test the classifier of the test_set for accuracy. This avoids me simply adjusting my methods to solely fit the test set.</p>
 
-<p>Now, we can finally train the algorithm and test for accuracy. These were my initial results<img src=",/images/pic 1.PNG" alt="Text Classification Scheme"></p>
+<p>Now, we can finally train the algorithm and test for accuracy. These were my initial results<br><img src="./images/pic 1.PNG" alt="Text Classification Scheme"></p>
 
-<p>Initially, this was very unpromising. An accuracy score of .2 would mean the algorithm does not better than chance, but this still means it only gets the answer right 50% of the time. However, after looking over that data, I decided that part of the issue was that I was taking on too many categories. To solve this problem. I let a 4.0 and a 5.0 score be positive, and a 2.0 or 1.0 be negative. I ignored all reviews with 3.0 score for simplicity. Doing this then yielded the following data<img src="./images/pic 2.PNG" alt="Text Classification Scheme"></p>
+<p>Initially, this was very unpromising. An accuracy score of .2 would mean the algorithm does not better than chance, but this still means it only gets the answer right 50% of the time. However, after looking over that data, I decided that part of the issue was that I was taking on too many categories. To solve this problem. I let a 4.0 and a 5.0 score be positive, and a 2.0 or 1.0 be negative. I ignored all reviews with 3.0 score for simplicity. Doing this then yielded the following data<br><img src="./images/pic 2.PNG" alt="Text Classification Scheme"></p>
 
 <p>This yielded dramatically better results than the previous method on the dev_set data. Here the algorithm correctly predicts the label almost 80% of the time - not paid for a seemingly simple method. I now apply this method to the test_set. The results are below:
 Accuracy: 0.8109</p>
@@ -83,7 +83,7 @@ Accuracy: 0.8109</p>
 <p>Thus we can see that what is a naïve method seemingly actually works very well in predicting the results.</p>
 
 <p>With that accomplished, I then worked on the other task, using gather human response and using that as a classifications scheme. I was pointed by a colleague to Mechanical Turk. This site, run by Amazon, allows you to get data for Human Intelligence Tasks, like deciding the sentiment of a review. I paid for over 1000 reviews to be analyzed by this service and was then able to utilize the data in a similar way as above. Here is had to also use neutral as a category as that is what I specified when I gave Mechanical Turk the data.
-<img src="./images/pic 3.PNG" alt="Text Classification Scheme"></p>
+<br><img src="./images/pic 3.PNG" alt="Text Classification Scheme"></p>
 
 <p>As we can see we have a lower rate of accuracy, as well as different most informative features. However, these features are more divisive in their probabilities of the outcomes. This is likely due to the smaller sample size. This data could then be applied to the rest of the set of reviews. In my attempt to do this, my computer shut down multiple times so I was unable to yield any results.</p>
 
