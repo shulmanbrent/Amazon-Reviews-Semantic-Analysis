@@ -54,18 +54,7 @@
 
 <p>With this in mind, I decide to focus on just reviews of “Baby” products. After talking with many other people, I determined that a topic that many people are interested in hearing other’s opinions on in “Baby” products. The transition from to motherhood can be very stressful for many women. I and others have observed anecdotally that mother almost always want “what is best” for their children. Often this in reference to the different types of product they will be using with their child. Many mothers are interested in the opinion of other mothers. This gives them a sense of whether they should use a product on their own baby or not. </p>
 
-<p>I decided go about researching these questions in two different ways. First I used only the given information in the dataset. Specifically, the review score and the review text given in the JSON object. An example of these objects can be see below:
-{"review/profileName": "C. COURVAL \"CINDY C.\"", 
-"product/price": "unknown", 
-"review/time": "1200528000", 
-"product/productId": "B000C9DZ4W", 
-"review/helpfulness": "2/2", 
-"review/summary": "RUFF", 
-"review/userId": "A1IGLU07FR5WG2", 
-"product/title": "Sumersault Polka Dots Sheet", 
-"review/score": "1.0", 
-"review/text": "THIS SHEET IS A CRIB SHEET FOR A BABIES BED. IT IS VERY COARSE, HARSH AND NOT POLKA DOTTED."}
-(Clearly not happy)</p>
+<p>I decided go about researching these questions in two different ways. First I used only the given information in the dataset. Specifically, the review score and the review text given in the JSON object. An example of these objects can be see below:<img src="./images/pic json.png" alt="Text Classification Scheme"></p>
 
 <p>Then secondly I used a crowdsourcing method to help me categorize the text. The basic model for how I will be tackling this research is best illustrated by the picture on the next page:<img src="http://www.nltk.org/images/supervised-classification.png" alt="Text Classification Scheme"></p>
 
@@ -76,8 +65,7 @@
 <p>I then created featureExtractor.py to parse the given review text into just its constituent words. I make sure not to include digits, as well as remove any punctuation from the strings. This method however also removes a feature that is possible semantically telling. Often increase punctuation (ex: exclamation points) could make it more likely that a review fits into one category or another. While I have simply chosen to look at each word individually, often the syntax and of sentences and phrases if often important. This can be analyzed, but I have chosen not to do this for this project because it can be very complicated. </p>
 
 <p>Now that I had the feature and the label matched up appropriately, we have something of the following form:
-*** This is only an example feature label match; order is not the same for all feature cases***
-[ { Contains(baby): True; Contains(hate): False; … Contains(like): True}, 1.0]</p>
+<img src="./images/pic 4.png" alt="Text Classification Scheme"></p>
 
 <p>Once this is done for all 187,000 items in the review dataset, I can then use a machine learning algorithm to help build a model to predict the sentiment of a previously unseen review. For this project I have chosen to use Naïve Bayes because of the ease by which I can build a Naïve Bayes Classifier using NLTK. The basic formula for this method can be seen below:<img src="http://upload.wikimedia.org/math/3/1/7/3174021f44ba0d31f6ede772624c5523.png" alt="General Naive Bayes Formula"></p>
 
@@ -85,56 +73,9 @@
 
 <p>Following this, I partition the feature set into 3 separate groups – the train_set, dev_set, and test_set. I will use train set to train the classifier and test its accuracy on the dev_set. This allows me to continue to tweak which features I am using to predict and classify the sentiment of the reviews. Ultimately by improving the accuracy on the dev_set I can test the classifier of the test_set for accuracy. This avoids me simply adjusting my methods to solely fit the test set.</p>
 
-<p>Now, we can finally train the algorithm and test for accuracy. These were my initial results
-Accuracy: 0.5429</p>
+<p>Now, we can finally train the algorithm and test for accuracy. These were my initial results<img src=",/images/pic 1.png" alt="Text Classification Scheme"></p>
 
-<p>Most Informative Features
-Feature: presence   Label 1:Label 2   Pr[Label 1]: Pr[Label 2]
-                  highly = True              5.0 : 3.0    =     14.1 : 1.0
-                   loves = True              5.0 : 1.0    =      9.9 : 1.0
-                    love = True              5.0 : 1.0    =      5.1 : 1.0
-                  sturdy = True              4.0 : 1.0    =      4.6 : 1.0
-                    toys = True              3.0 : 1.0    =      4.3 : 1.0
-                 however = True              3.0 : 5.0    =      4.3 : 1.0
-                 perfect = True              5.0 : 1.0    =      3.7 : 1.0
-                    easy = True              5.0 : 1.0    =      3.7 : 1.0
-                     toy = True              4.0 : 1.0    =      3.6 : 1.0
-                    fits = True              5.0 : 1.0    =      3.6 : 1.0
-                    best = True              5.0 : 1.0    =      3.4 : 1.0
-                  amazon = True              1.0 : 3.0    =      3.4 : 1.0
-                 monitor = True              1.0 : 5.0    =      3.2 : 1.0
-                 thought = True              2.0 : 5.0    =      3.2 : 1.0
-                     bit = True              4.0 : 1.0    =      3.2 : 1.0
-                   money = True              1.0 : 4.0    =      3.1 : 1.0
-                    work = True              2.0 : 5.0    =      2.8 : 1.0
-                   seems = True              3.0 : 1.0    =      2.7 : 1.0
-                  though = True              3.0 : 1.0    =      2.6 : 1.0
-                 plastic = True              3.0 : 5.0    =      2.6 : 1.0</p>
-
-<p>Initially, this was very unpromising. An accuracy score of .2 would mean the algorithm does not better than chance, but this still means it only gets the answer right 50% of the time. However, after looking over that data, I decided that part of the issue was that I was taking on too many categories. To solve this problem. I let a 4.0 and a 5.0 score be positive, and a 2.0 or 1.0 be negative. I ignored all reviews with 3.0 score for simplicity. Doing this then yielded the following data
-Accuracy: 0.826
-Most Informative Features
-Feature: presence   Label 1:Label 2   Pr[Label 1]: Pr[Label 2]
-                 perfect = True              pos : neg    =      4.4 : 1.0
-                    love = True              pos : neg    =      3.4 : 1.0
-                 pampers = True              neg : pos    =      3.3 : 1.0
-                   works = True              pos : neg    =      3.3 : 1.0
-                  amazon = True              neg : pos    =      3.3 : 1.0
-                     toy = True              pos : neg    =      3.3 : 1.0
-                 monitor = True              neg : pos    =      3.2 : 1.0
-                  though = True              pos : neg    =      3.1 : 1.0
-                   since = True              pos : neg    =      3.0 : 1.0
-                 plastic = True              neg : pos    =      2.8 : 1.0
-                    item = True              neg : pos    =      2.8 : 1.0
-                stroller = True              pos : neg    =      2.8 : 1.0
-                  sturdy = True              pos : neg    =      2.7 : 1.0
-                  easily = True              pos : neg    =      2.6 : 1.0
-                     say = True              neg : pos    =      2.6 : 1.0
-                    easy = True              pos : neg    =      2.6 : 1.0
-                   price = True              pos : neg    =      2.5 : 1.0
-                   house = True              pos : neg    =      2.5 : 1.0
-                 reviews = True              neg : pos    =      2.4 : 1.0
-                    toys = True              pos : neg    =      2.3 : 1.0</p>
+<p>Initially, this was very unpromising. An accuracy score of .2 would mean the algorithm does not better than chance, but this still means it only gets the answer right 50% of the time. However, after looking over that data, I decided that part of the issue was that I was taking on too many categories. To solve this problem. I let a 4.0 and a 5.0 score be positive, and a 2.0 or 1.0 be negative. I ignored all reviews with 3.0 score for simplicity. Doing this then yielded the following data<img src="./images/pic 2.png" alt="Text Classification Scheme"></p>
 
 <p>This yielded dramatically better results than the previous method on the dev_set data. Here the algorithm correctly predicts the label almost 80% of the time - not paid for a seemingly simple method. I now apply this method to the test_set. The results are below:
 Accuracy: 0.8109</p>
@@ -142,29 +83,7 @@ Accuracy: 0.8109</p>
 <p>Thus we can see that what is a naïve method seemingly actually works very well in predicting the results.</p>
 
 <p>With that accomplished, I then worked on the other task, using gather human response and using that as a classifications scheme. I was pointed by a colleague to Mechanical Turk. This site, run by Amazon, allows you to get data for Human Intelligence Tasks, like deciding the sentiment of a review. I paid for over 1000 reviews to be analyzed by this service and was then able to utilize the data in a similar way as above. Here is had to also use neutral as a category as that is what I specified when I gave Mechanical Turk the data.
-accuracy: 0.693386773547
-Most Informative Features
-    Feature: presence   Label 1:Label 2   Pr[Label 1]: Pr[Label 2]
-                   guess = True           Negati : Positi =     17.1 : 1.0
-               obviously = True           Neutra : Positi =     11.7 : 1.0
-                    lack = True           Neutra : Positi =     11.7 : 1.0
-                   maybe = True           Neutra : Positi =     11.7 : 1.0
-                 finally = True           Neutra : Positi =     11.7 : 1.0
-                   later = True           Neutra : Positi =     11.7 : 1.0
-                    okay = True           Neutra : Positi =     11.7 : 1.0
-                solution = True           Negati : Positi =     11.0 : 1.0
-               practical = True           Negati : Positi =     11.0 : 1.0
-                returned = True           Negati : Positi =     11.0 : 1.0
-                   start = True           Neutra : Positi =      9.1 : 1.0
-                      oz = True           Neutra : Positi =      9.1 : 1.0
-                  pieces = True           Negati : Positi =      9.0 : 1.0
-                  return = True           Negati : Positi =      9.0 : 1.0
-                  washed = True           Negati : Positi =      9.0 : 1.0
-                  regret = True           Negati : Positi =      9.0 : 1.0
-            disappointed = True           Negati : Positi =      9.0 : 1.0
-                    loud = True           Negati : Positi =      9.0 : 1.0
-                  paying = True           Negati : Positi =      9.0 : 1.0
-                terrible = True           Negati : Positi =      9.0 : 1.0</p>
+<img src="./images/pic 3.png" alt="Text Classification Scheme"></p>
 
 <p>As we can see we have a lower rate of accuracy, as well as different most informative features. However, these features are more divisive in their probabilities of the outcomes. This is likely due to the smaller sample size. This data could then be applied to the rest of the set of reviews. In my attempt to do this, my computer shut down multiple times so I was unable to yield any results.</p>
 
